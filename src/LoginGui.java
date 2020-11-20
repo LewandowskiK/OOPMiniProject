@@ -2,14 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Login extends JFrame{
+public class LoginGui extends JFrame{
     //declaration of global components and variables needed for functionality
     private final JTextArea usernameField;
     private final JPasswordField passwordField;
     JLabel attemptLabel;
     private int attemptCounter = 3;
 
-    public Login(){
+    public LoginGui(){
         //set window Title to 'Login'
         super("Login");
 
@@ -77,13 +77,13 @@ public class Login extends JFrame{
 
     public static void main(String[] args) {
         //initialise window for testing
-        Login window = new Login();
+        LoginGui window = new LoginGui();
     }
 
     private class ButtonEventHandler implements ActionListener{
 
         public void actionPerformed(ActionEvent e) {
-            //username and password validation
+            //username and password validation CURRENT PASSWORD FOR TESTING IS 'password', case sensitive
             if(encrypt(passwordField.getPassword()).equals("ufxx|twi")&&usernameField.getText().equals("username")){
                 //do stuff, simple dialog and exit for now
                 JOptionPane.showMessageDialog(null,"Grats");
@@ -115,7 +115,7 @@ public class Login extends JFrame{
     private String encrypt(char[] password){
         String encryptedPassword = "";
 
-        //simple encryption method learned in RAD first year translated amended from python to java language
+        //simple encryption method - caesar cypher - learned in RAD first year translated/amended from python to java language
         //for each character the ASCII value will be increased by 5,then the character and stored to a string and returned for comparison
 
         for(char c : password){
