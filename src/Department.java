@@ -42,12 +42,19 @@ public class Department {
 
     @Override
     public String toString() {
-        String output ="Department Name: " +getDepartmentName() + "\nDepartment Manager: " + getDepartmentManager().getName();
+        String output ="Department Name: " +getDepartmentName() + "\nDepartment Manager: " + getDepartmentManager().getName() + "\n\nDepartment Employees:\n\n";
 
         //loop through the departmentWorkers to add them all to the output
-        for(Employee employee: getDepartmentWorkers()){
-            output += employee;
+        if(getDepartmentWorkers()!=null){
+            for(Employee employee: getDepartmentWorkers()){
+                output += employee + "\n";
+            }
         }
+        //if there are no employees assigned print out the message below
+        else{
+            output+="No employees in this department yet";
+        }
+
 
         return output;
     }

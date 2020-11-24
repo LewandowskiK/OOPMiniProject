@@ -6,12 +6,10 @@ public class Manager extends Employee{
     private Department department;
 
         //manager requires a department to manage
-    public Manager(String name, String address, String eircode, GregorianCalendar dateOfEmployment, int pointOnSalaryScale, String position, Department department) {
+    public Manager(String name, String address, String eircode, GregorianCalendar dateOfEmployment, int pointOnSalaryScale) {
         super(name, address, eircode, dateOfEmployment);
         //set the position as manager of department
-        setPosition("Manager of " + getDepartment().getDepartmentName());
         setPointOnSalaryScale(pointOnSalaryScale);
-        setDepartment(department);
     }
 
     public int getPointOnSalaryScale() {
@@ -26,8 +24,8 @@ public class Manager extends Employee{
         return position;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setPosition() {
+        this.position = "Manager of " +getDepartment().getDepartmentName();
     }
 
     public Department getDepartment() {

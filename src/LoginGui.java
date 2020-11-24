@@ -81,16 +81,18 @@ public class LoginGui extends JFrame{
     }
 
     private class ButtonEventHandler implements ActionListener{
-
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ADD DIFFERENT ACCOUNTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         public void actionPerformed(ActionEvent e) {
+            //username 'ceo', password 'CEO' case sensitive
+            if(usernameField.getText().toLowerCase().equals("ceo") && encrypt(passwordField.getPassword()).equals("HJT")){
+                JOptionPane.showMessageDialog(null,"CEO logged in");
+                CEOGui gui = new CEOGui();
+            }
             //username and password validation CURRENT PASSWORD FOR TESTING IS 'password', case sensitive
-            if(encrypt(passwordField.getPassword()).equals("ufxx|twi")&&usernameField.getText().equals("username")){
+            else if(encrypt(passwordField.getPassword()).equals("ufxx|twi") && usernameField.getText().toLowerCase().equals("username")){
                 //do stuff, simple dialog and exit for now
-                JOptionPane.showMessageDialog(null,"Grats");
+                JOptionPane.showMessageDialog(null,"temporary user logged in");
                 System.exit(0);
-
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ADD DIFFERENT ACCOUNTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
             }
             else{
                 //decrement attemptCounter and display error message and attempts remaining
@@ -123,7 +125,7 @@ public class LoginGui extends JFrame{
             ascii+=5;
             encryptedPassword += (char)ascii;
         }
-        //System.out.println(encryptedPassword);
+        System.out.println(encryptedPassword);
         return encryptedPassword;
     }
 }
