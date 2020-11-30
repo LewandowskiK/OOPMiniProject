@@ -13,12 +13,10 @@ public class Worker extends Employee {
     private String position;
     private String department;
 
-
     public Worker(String name, String address, String eircode, GregorianCalendar dateOfEmployment, String position) {
         super(name, address, eircode, dateOfEmployment);
         setPosition();
     }
-
 
     //Setters and getters
     public String getDepartment() {

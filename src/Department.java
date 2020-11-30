@@ -29,7 +29,10 @@ public class Department {
     }
 
     public Manager getDepartmentManager() {
-        return departmentManager;
+        if(this.departmentManager==null)
+            return new Manager();
+        else
+            return departmentManager;
     }
 
     public void setDepartmentManager(Manager departmentManager) {

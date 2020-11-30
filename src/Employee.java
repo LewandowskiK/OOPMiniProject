@@ -16,7 +16,7 @@ public abstract class Employee {
     private int pointOnSalaryScale;
     private static int IDCounter = 0;
 
-    // no argument constructor, only used when creating a department
+    // no argument constructor, only used when no manager was yet assigned to a department
     public Employee() {
         this("No manager assigned",null,null, null);
     }
