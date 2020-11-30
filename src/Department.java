@@ -1,3 +1,10 @@
+//Department.java
+//Krystian Lewandowski
+/*This program will allow the user to instantiate a Department object with the following parameters:
+* 1.Name of the department
+* 2.The Manager of the department, not assigned by default
+* 3.An arrayList of Workers who work in the department, empty by default*/
+
 import java.util.ArrayList;
 
 public class Department {
@@ -34,11 +41,13 @@ public class Department {
     }
 
     //method to add an employee to a department invokable only by the manager of the department
-    public void addEmployee(Employee employee){
+    public void addEmployee(Worker employee){
         this.departmentWorkers.add(employee);
+        employee.setDepartment(this.getDepartmentName());
+        employee.setPosition();
     }
 
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ADD METHOD TO REMOVE AN EMPLOYEE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ADD METHOD TO REMOVE AN EMPLOYEE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     @Override
     public String toString() {
@@ -52,7 +61,7 @@ public class Department {
         }
         //if there are no employees assigned print out the message below
         else{
-            output+="No employees in this department yet";
+            output += "No employees in this department yet";
         }
 
 

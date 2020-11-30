@@ -1,15 +1,19 @@
+//LoginGUI.java
+//Krystian Lewandowski
+/*This program will allow the user to log in to the system as a CEO or Manager*/
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class LoginGui extends JFrame{
+public class LoginGUI extends JFrame{
     //declaration of global components and variables needed for functionality
     private final JTextArea usernameField;
     private final JPasswordField passwordField;
     JLabel attemptLabel;
     private int attemptCounter = 3;
 
-    public LoginGui(){
+    public LoginGUI(){
         //set window Title to 'Login'
         super("Login");
 
@@ -75,18 +79,14 @@ public class LoginGui extends JFrame{
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        //initialise window for testing
-        LoginGui window = new LoginGui();
-    }
-
     private class ButtonEventHandler implements ActionListener{
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ADD DIFFERENT ACCOUNTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ADD DIFFERENT ACCOUNTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         public void actionPerformed(ActionEvent e) {
             //username 'ceo', password 'CEO' case sensitive
             if(usernameField.getText().toLowerCase().equals("ceo") && encrypt(passwordField.getPassword()).equals("HJT")){
                 JOptionPane.showMessageDialog(null,"CEO logged in");
-                CEOGui gui = new CEOGui();
+                CEOGUI gui = new CEOGUI();
+                dispose();
             }
             //username and password validation CURRENT PASSWORD FOR TESTING IS 'password', case sensitive
             else if(encrypt(passwordField.getPassword()).equals("ufxx|twi") && usernameField.getText().toLowerCase().equals("username")){
@@ -125,7 +125,8 @@ public class LoginGui extends JFrame{
             ascii+=5;
             encryptedPassword += (char)ascii;
         }
-        System.out.println(encryptedPassword);
+        //USED TO GET ENCRYPTED PASSWORD TEMPORARILY
+        //System.out.println(encryptedPassword);
         return encryptedPassword;
     }
 }

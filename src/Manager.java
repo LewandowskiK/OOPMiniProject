@@ -1,31 +1,40 @@
+//Manager.java
+//Krystian Lewandowski
+/*This program will allow the user to instantiate a Manager Object with the following parameters:
+* 1.Name of the Manager
+* 2.Address of the manager
+* 3.Eircode of the manager
+* 4.Date of employment
+* The manager will then be assigned to a Department*/
+
 import java.util.GregorianCalendar;
 
 public class Manager extends Employee{
-    private int pointOnSalaryScale;
+
     private String position;
     private Department department;
 
-        //manager requires a department to manage
-    public Manager(String name, String address, String eircode, GregorianCalendar dateOfEmployment, int pointOnSalaryScale) {
+    //no argument constructor, used when creating a department
+    public Manager() {
+        super();
+    }
+
+    //manager requires a department to manage
+    public Manager(String name, String address, String eircode, GregorianCalendar dateOfEmployment) {
         super(name, address, eircode, dateOfEmployment);
-        //set the position as manager of department
-        setPointOnSalaryScale(pointOnSalaryScale);
-    }
-
-    public int getPointOnSalaryScale() {
-        return pointOnSalaryScale;
-    }
-
-    public void setPointOnSalaryScale(int pointOnSalaryScale) {
-        this.pointOnSalaryScale = pointOnSalaryScale;
+        setPosition();
     }
 
     public String getPosition() {
         return position;
     }
 
+
     public void setPosition() {
-        this.position = "Manager of " +getDepartment().getDepartmentName();
+        if(getDepartment()!=null)
+            this.position = "Manager of " + getDepartment() + " Department";
+        else
+            this.position = "Manager";
     }
 
     public Department getDepartment() {
