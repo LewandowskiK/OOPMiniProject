@@ -196,7 +196,7 @@ public class CEOGUI extends JFrame {
 
         if(counter==0){
             //no department found
-            JOptionPane.showMessageDialog(null,"No department '" + query + "' was found!","Query not Found",JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null,"No department similar to '" + query + "' was found!","Query not Found",JOptionPane.INFORMATION_MESSAGE);
         }
         else if(counter==1){
             //only one department found
