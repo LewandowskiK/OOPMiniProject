@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
 public class addManagerGUI extends JFrame implements ActionListener {
@@ -13,6 +14,7 @@ public class addManagerGUI extends JFrame implements ActionListener {
     JTextArea[] textAreas = new JTextArea[5];
     //combo box for the month of employment
     JComboBox monthList = new JComboBox(new String[]{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"});
+    JComboBox departmentList;
     //submit button for listener
     JButton submit;
 
@@ -40,7 +42,7 @@ public class addManagerGUI extends JFrame implements ActionListener {
         formPanel.add(departmentLabel);
 
         //user method returns an array of String
-        JComboBox departmentList = new JComboBox(initializeDepartments());
+        departmentList = new JComboBox(initializeDepartments());
         departmentList.setBounds(100,10,200,20);
         formPanel.add(departmentList);
 
@@ -65,7 +67,7 @@ public class addManagerGUI extends JFrame implements ActionListener {
         textAreas[1].setBounds(100,70,200,20);
         formPanel.add(textAreas[1]);
 
-        JLabel eircodeLabel = new JLabel("Eircode(DDDDDDD):");
+        JLabel eircodeLabel = new JLabel("Eircode:");
         eircodeLabel.setBounds(10,100,(int)eircodeLabel.getPreferredSize().getWidth(),(int)eircodeLabel.getPreferredSize().getHeight());
         formPanel.add(eircodeLabel);
 
@@ -77,7 +79,7 @@ public class addManagerGUI extends JFrame implements ActionListener {
 
 
 
-        JLabel dateOfEmploymentLabel = new JLabel("Date Of Employment(leave blank for today):");
+        JLabel dateOfEmploymentLabel = new JLabel("Date Of Employment:");
         dateOfEmploymentLabel.setBounds(10,130,(int)dateOfEmploymentLabel.getPreferredSize().getWidth(),(int)dateOfEmploymentLabel.getPreferredSize().getHeight());
         formPanel.add(dateOfEmploymentLabel);
 
@@ -184,8 +186,24 @@ public class addManagerGUI extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==submit) {
-            if(validFields()){
-                Driver.managers.add(new Manager(textAreas[0].getText(),textAreas[1].getText(),textAreas[2].getText(),getDate()));
+            if(areValidFields() && isValidDate()){
+                //constructor takes (name, address, eircode, dateOfEmployment)
+                Manager manager = new Manager(textAreas[0].getText(),textAreas[1].getText(),textAreas[2].getText(),getDate());
+
+                String selectedItem = departmentList.getSelectedItem().toString();
+                //search the global departments array for the selected department form the list
+                int index = 0, counter = 0;
+                for(Department department : Driver.departments){
+                    if(department.getDepartmentName().equals(selectedItem)){
+                        //grab the index of said department in the global array
+                        index = counter;
+                    }
+                    counter++;
+                }
+                manager.setDepartment(Driver.departments.get(index));
+                Driver.departments.get(index).setDepartmentManager(manager);
+                Driver.managers.add(manager);
+                JOptionPane.showMessageDialog(null,manager);
             }
         }
         //cancel button pressed
@@ -195,34 +213,30 @@ public class addManagerGUI extends JFrame implements ActionListener {
         }
     }
 
-    private boolean validFields(){
+    //user defined methods start below
+    //this method returns an error message if anything was entered incorrectly
+    private boolean areValidFields(){
         boolean result = false;
         //a string that will hold all of the errors found
         String errors = "";
         for(JTextArea textArea:textAreas){
+
+            //if both year or day were entered wrong just output 'invalid date entered'
             if(textArea.getName().equals("Year Field")){
-                if(textArea.getName().equals("Year Field"))
-                    if(!validYear())
-                        errors += "Invalid date was entered into the Year Field\n";
-                if(validYear() && !validDay()){
-                    errors += "Invalid date was entered into the Year Field\n";
-                }
+                if(!isValidYear()||(isValidYear() && !isValidDay()))
+                    errors += "Invalid date was entered\n";
             }
             else if(textArea.getText().equals("")){
                 errors += textArea.getName() + " has been left blank\n";
             }
-            if(!textArea.getText().equals("") && textArea.getName().equals("Name Field") && !validName()){
+
+            if(!textArea.getText().equals("") && textArea.getName().equals("Name Field") && !isValidName()){
                 errors += "Invalid name entered\n";
             }
-            if(!textArea.getText().equals("") && textArea.getName().equals("Eircode Field") && !validEircode()){
+            if(!textArea.getText().equals("") && textArea.getName().equals("Eircode Field") && !isValidEircode()){
                 errors += "Invalid eircode entered\n";
             }
         }
-
-
-
-
-
         //if no errors were generated then all inputs were valid
         if(errors.equals("")){
             result = true;
@@ -233,7 +247,8 @@ public class addManagerGUI extends JFrame implements ActionListener {
         return result;
     }
 
-    private boolean validDay(){
+    //this method validates the day entered in the form ie. all numeric
+    private boolean isValidDay(){
         int i;
         String yearText = textAreas[3].getText();
         for(i = 0; i < yearText.length(); i++){
@@ -253,7 +268,7 @@ public class addManagerGUI extends JFrame implements ActionListener {
                     return true;
             }
             //else, the month is february, check for valid year, then leap year and respond appropriately
-            else if(validYear()){
+            else if(isValidYear()){
                     if(Integer.parseInt(textAreas[4].getText())/4==0){
                         if(dayNo > 0 && dayNo <=29)
                             return true;
@@ -267,7 +282,8 @@ public class addManagerGUI extends JFrame implements ActionListener {
         return false;
     }
 
-    private boolean validYear(){
+    //this method validates the year entered in the form ie. all numeric
+    private boolean isValidYear(){
         int i;
         String yearText = textAreas[4].getText();
         if(yearText.length()==4){
@@ -282,7 +298,8 @@ public class addManagerGUI extends JFrame implements ActionListener {
         return false;
     }
 
-    private boolean validName(){
+    //this method validates the name entered into the form ie. name is alpha
+    private boolean isValidName(){
         if(!textAreas[0].getText().equals("")){
             String nameText = textAreas[0].getText();
             int i;
@@ -297,26 +314,29 @@ public class addManagerGUI extends JFrame implements ActionListener {
         return false;
     }
 
-    private boolean validEircode(){
+    //this method validates the eircode entered, the address mightn't actually exist but it follows the validation steps
+    //outlined by the respective authority
+    private boolean isValidEircode(){
     /*Eircode allowed characters chart found here under chapter 1.5.4
     *http://www.ossiansmyth.ie/wp-content/uploads/2015/04/Eircode-Address-File-Product-Guide-Edition-1-Version-8-PUBLISHED.pdf
     *
     *Pos | Allowed characters
-    *1   | A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
-    *2   | 0-9
-    *3   | 0-9 with the exception of W for D6W
-    *4   | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
-    *5   | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
-    *6   | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
-    *7   | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
+    * 1  | A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
+    * 2  | 0-9
+    * 3  | 0-9 with the exception of W for D6W
+    * 4  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
+    * 5  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
+    * 6  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
+    * 7  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
     **/
     //in order to make this easier, i decided to store the allowed letters in a string so that i can use the .contains()
     //otherwise i could have used a for loop for each character but that is not as efficient :P
         String allowedLetters = "ACDEFHKNPRTVWXY";
         String eircodeText = textAreas[2].getText();
         if(eircodeText.length()==7){
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MIGHT NEED REVISION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //perform all of the requirement checks above in one if statement
-            //substring used instead of charAt() because contains wants char 'String' to compare to
+            //substring used instead of charAt() because contains wants a charArray or 'String' to compare to
             if(allowedLetters.contains(eircodeText.substring(0,1)) && Character.isDigit(eircodeText.charAt(1)) &&
             (Character.isDigit(eircodeText.charAt(1)) || (eircodeText.charAt(0)=='D' && eircodeText.charAt(1)=='6' && eircodeText.charAt(2)=='W')) &&
             (Character.isDigit(eircodeText.charAt(3)) || allowedLetters.contains(eircodeText.substring(3,4))) &&
@@ -325,12 +345,40 @@ public class addManagerGUI extends JFrame implements ActionListener {
             (Character.isDigit(eircodeText.charAt(6)) || allowedLetters.contains(eircodeText.substring(6,7)))){
                 return true;
             }
-
         }
         return false;
     }
 
+    //this method checks that all the date details are correct and that the date is either today or before today
+    private boolean isValidDate(){
+        //this only gets called if no errors were present in the form
+        int employmentDay = Integer.parseInt(textAreas[3].getText());
+        int employmentMonth = monthList.getSelectedIndex();
+        int employmentYear = Integer.parseInt(textAreas[4].getText());
+        GregorianCalendar todaysDate = new GregorianCalendar();
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+        int todaysDay = Integer.parseInt(dayFormat.format(todaysDate.getTime()));
+        int todaysMonth = Integer.parseInt(monthFormat.format(todaysDate.getTime()));
+        int todaysYear = Integer.parseInt(yearFormat.format(todaysDate.getTime()));
+
+        if(employmentYear<=todaysYear){
+            //if it is the same year, the month has to be earlier than or the same as todays month, otherwise it doesnt matter
+            if((employmentYear==todaysYear && employmentMonth<=todaysMonth)||(employmentYear<todaysYear)){
+                //similarly to above, if the month and year are the same, the day has to be earlier or the same day as today, otherwise it doesnt matter
+                if((employmentYear==todaysYear && employmentMonth==todaysMonth && employmentDay<=todaysDay) || (employmentMonth<todaysMonth)){
+                    return true;
+                }
+            }
+        }
+        JOptionPane.showMessageDialog(null,"The date has to be either today or in the past","Invalid date",JOptionPane.ERROR_MESSAGE);
+        return false;
+    }
+
+    //this method puts the separate fields together
+    //only invoked if the date is valid and either today or in the past
     private GregorianCalendar getDate(){
-        return null;
+        return new GregorianCalendar(Integer.parseInt(textAreas[4].getText()),monthList.getSelectedIndex(),Integer.parseInt(textAreas[3].getText()));
     }
 }

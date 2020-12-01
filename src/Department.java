@@ -67,7 +67,6 @@ public class Department {
             output += "No employees in this department yet";
         }
 
-
         return output;
     }
 }

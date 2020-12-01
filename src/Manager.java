@@ -32,7 +32,7 @@ public class Manager extends Employee{
 
     public void setPosition() {
         if(getDepartment()!=null)
-            this.position = "Manager of " + getDepartment() + " Department";
+            this.position = "Manager of " + getDepartment().getDepartmentName() + " Department";
         else
             this.position = "Manager";
     }

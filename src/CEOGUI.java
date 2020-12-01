@@ -9,7 +9,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 public class CEOGUI extends JFrame {
 
@@ -193,7 +192,6 @@ public class CEOGUI extends JFrame {
                 queriedDepartments[counter] = department;
                 counter++;
             }
-
         if(counter==0){
             //no department found
             JOptionPane.showMessageDialog(null,"No department similar to '" + query + "' was found!","Query not Found",JOptionPane.INFORMATION_MESSAGE);
