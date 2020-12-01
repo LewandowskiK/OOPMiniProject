@@ -125,74 +125,11 @@ public class CEOGUI extends JFrame {
                 //removeDepartment
             }
             else if(e.getSource()==jButtons[3]){
-                //removeManager();
+                //removeManager
             }
             else{
-                //if at least one department was added
-                if(Driver.departments.size()>0){
-                    int choice = JOptionPane.showConfirmDialog(null,"Would you like to list all departments?");
-                    switch (choice){
-                        case 0:
-                            //User clicks yes, all departments are listed
-                            String output = "";
-                            for(Department department : Driver.departments)
-                                output += department + "\n\n";
-
-                            JOptionPane.showMessageDialog(null,output,"All Departments",JOptionPane.INFORMATION_MESSAGE);
-                            break;
-
-                        case 1:
-                            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MIGHT ADD A GUI COMBO BOX INSTEAD !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            //user clicks no, a search query is asked from the user
-                            String query = JOptionPane.showInputDialog("Please enter the name of the department you are searching for");
-                            //an array for the queried departments and a counter are initialized
-                            Department[] queriedDepartments = new Department[Driver.departments.size()];
-                            int counter = 0;
-
-                            for(Department department : Driver.departments)
-                                if(department.getDepartmentName().toLowerCase().equals(query.toLowerCase())){
-                                    queriedDepartments[counter] = department;
-                                    counter++;
-                                }
-
-                            if(counter==0){
-                                //no department found
-                                JOptionPane.showMessageDialog(null,"No department with that name was found!","Query not Found",JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            else if(counter==1){
-                                //only one department found
-                                JOptionPane.showMessageDialog(null,"Department details as follows:\n\n" + queriedDepartments[0],"Department Found",JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            else{
-                                //more than one department found
-                                int index = 1;
-                                output = "";
-                                for(Department department : queriedDepartments){
-                                    if(department != null){
-                                        output += "Index: " + index + "   Department Name: " + department.getDepartmentName() + "\n";
-                                    }
-                                    else
-                                        //we hit a null value in the array, every next value is also blank, therefore terminate loop
-                                        /* a for each loop is used because theoretically you could have to go through the entire array
-                                         * if the user inputs 'a' or something similar */
-                                        break;
-                                }
-                                String input = JOptionPane.showInputDialog(output + "\n\nPlease enter one of the indices above to select the department");
-                                while (!validIndex(counter,input)){
-                                    input = JOptionPane.showInputDialog(output +"\n\nInvalid Index entered!" + "\nPlease re-enter one of the indices above");
-                                }
-                                //-1 to get the actual index of the item
-                                index = Integer.parseInt(input) - 1;
-                                JOptionPane.showMessageDialog(null,"Displaying the stats for " + queriedDepartments[index].getDepartmentName() + " Department:\n\n" );
-                            }
-                            break;
-                            //end of switch
-                    }
-                }
-                else{
-                    //no departments created yet
-                    JOptionPane.showMessageDialog(null,"Please add at least one department before attempting to search for departments","No departments Present",JOptionPane.INFORMATION_MESSAGE);
-                }
+                //user created method invoked
+                searchDepartments();
             }
         }
     }
@@ -213,5 +150,80 @@ public class CEOGUI extends JFrame {
         }
 
         return valid;
+    }
+
+    private void searchDepartments(){
+        //if at least one department was added
+        if(Driver.departments.size()>0){
+            int choice = JOptionPane.showConfirmDialog(null,"Would you like to list all departments?");
+            switch (choice){
+                case 0:
+                    //User clicks yes, all departments are listed
+                    listAllDepartments();
+                    break;
+                case 1:
+                    //user clicks no, a search query is asked from the user
+                    listOneDepartment();
+                    break;
+                //end of switch
+            }
+        }
+        else{
+            //no departments created yet
+            JOptionPane.showMessageDialog(null,"Please add at least one department before attempting to search for departments","No departments Present",JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void listAllDepartments(){
+        String output = "";
+        for(Department department : Driver.departments)
+            output += department + "\n\n";
+
+        JOptionPane.showMessageDialog(null,output,"All Departments",JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void listOneDepartment(){
+        String query = JOptionPane.showInputDialog("Please enter the name of the department you are searching for");
+        //an array for the queried departments and a counter are initialized
+        Department[] queriedDepartments = new Department[Driver.departments.size()];
+        int counter = 0;
+
+        for(Department department : Driver.departments)
+            if(department.getDepartmentName().toLowerCase().contains(query.toLowerCase())){
+                queriedDepartments[counter] = department;
+                counter++;
+            }
+
+        if(counter==0){
+            //no department found
+            JOptionPane.showMessageDialog(null,"No department '" + query + "' was found!","Query not Found",JOptionPane.INFORMATION_MESSAGE);
+        }
+        else if(counter==1){
+            //only one department found
+            JOptionPane.showMessageDialog(null,"Department details as follows:\n\n" + queriedDepartments[0],"Department Found",JOptionPane.INFORMATION_MESSAGE);
+        }
+        else{
+            //more than one department found
+            int index = 1;
+            String output = "";
+            for(Department department : queriedDepartments){
+                if(department != null){
+                    output += "Index: " + index + "   Department Name: " + department.getDepartmentName() + "\n";
+                }
+                else {
+                    //we hit a null value in the array, every next value is also blank, therefore terminate loop
+                    /* a for each loop is used because theoretically you could have to go through the entire array
+                     * if the user inputs 'a' or something similar */
+                    break;
+                }
+            }
+            String input = JOptionPane.showInputDialog(output + "\n\nPlease enter one of the indices above to select the department");
+            while (!validIndex(counter,input)){
+                input = JOptionPane.showInputDialog(output +"\n\nInvalid Index entered!" + "\nPlease re-enter one of the indices above");
+            }
+            //-1 to get the actual index of the item
+            index = Integer.parseInt(input) - 1;
+            JOptionPane.showMessageDialog(null,"Displaying the stats for " + queriedDepartments[index].getDepartmentName() + " Department:\n\n" );
+        }
     }
 }

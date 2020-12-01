@@ -43,6 +43,7 @@ public class Manager extends Employee{
 
     public void setDepartment(Department department) {
         this.department = department;
+        setPosition();
     }
 
     public String toString() {
