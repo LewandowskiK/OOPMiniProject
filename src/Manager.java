@@ -7,9 +7,10 @@
 * 4.Date of employment
 * The manager will then be assigned to a Department*/
 
+import java.io.Serializable;
 import java.util.GregorianCalendar;
 
-public class Manager extends Employee{
+public class Manager extends Employee implements Serializable {
 
     private String position;
     private Department department;

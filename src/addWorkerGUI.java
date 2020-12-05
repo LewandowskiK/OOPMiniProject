@@ -1,6 +1,6 @@
-//addManagerGUI.java
+//addWorkerGUI.java
 //Krystian Lewandowski
-/*This program has all the code necessary to create a manager on the system, done through a GUI */
+/*This GUI allows the user to add an employee to a department*/
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,18 +9,19 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
-public class addManagerGUI extends JFrame implements ActionListener {
-    //text areas for name,address,eircode,(day,year)of employment
+public class addWorkerGUI extends JFrame implements ActionListener {
+
     JTextArea[] textAreas = new JTextArea[5];
     //combo box for the month of employment
     JComboBox monthList = new JComboBox(new String[]{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"});
-    JComboBox departmentList;
-    //submit button for listener
     JButton submit;
+    String departmentName;
 
-    public addManagerGUI(){
-        //set title to 'Add Manager'
-        super("Add Manager");
+    public addWorkerGUI(String selectedDepartmentName){
+        //set title to 'Add Worker'
+        super("Add Worker");
+
+        departmentName = selectedDepartmentName;
 
         //set border layout
         setLayout(new BorderLayout(0,0));
@@ -29,22 +30,17 @@ public class addManagerGUI extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
 
         //set size of the window
-        setSize(320,270);
+        setSize(360,270);
 
-        //a panel that will contain the form needed to create a new Manager Object
+        //a panel that will contain the form needed to create a new Worker Object
         JPanel formPanel = new JPanel();
 
         //null layout for absolute positioning
         formPanel.setLayout(null);
 
-        JLabel departmentLabel = new JLabel("Department:");
-        departmentLabel.setBounds(10,10,190,20);
+        JLabel departmentLabel = new JLabel("Please fill out this form to add a worker to the Department");
+        departmentLabel.setBounds(10,10,340,20);
         formPanel.add(departmentLabel);
-
-        //user method returns an array of String
-        departmentList = new JComboBox(initializeDepartments());
-        departmentList.setBounds(100,10,200,20);
-        formPanel.add(departmentList);
 
         //create JLabels and JTextAreas for the user to fill out, the text areas are assigned names for more meaningful error messages
         JLabel nameLabel = new JLabel("Name:");
@@ -142,81 +138,46 @@ public class addManagerGUI extends JFrame implements ActionListener {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
         repaint();
-
-        //if there are no departments to assign a manager to do below
-        if(initializeDepartments()[0].equals("No Departments Available")){
-            JOptionPane.showMessageDialog(null,"Please create at least one department before assigning a manager","No Departments Created",JOptionPane.INFORMATION_MESSAGE);
-            dispose();
-        }
-    }
-
-    public String[] initializeDepartments(){
-        //initialize a string array of size departments.size(), ie however-many department objects are instantiated
-        String[] tempDepartmentNames = new String[Driver.departments.size()];
-        int counter = 0;
-        for(Department department:Driver.departments){
-            //if the manager name is the default constructor Manager name, there is no one assigned yet
-            if(department.getDepartmentManager().getName().equals("No manager assigned")){
-
-                tempDepartmentNames[counter]=department.getDepartmentName();
-                counter++;
-            }
-        }
-        if(counter==0){
-            return new String[]{"No Departments Available"};
-        }
-        //if the counter is the size of the global departments array return all the departments
-        else if(counter==Driver.departments.size()){
-            return tempDepartmentNames;
-        }
-        else {
-            //make a new array of size counter, ie the amount of departments with no manager
-            String[] departmentNames = new String[counter];
-            counter = 0;
-            //populate the array
-            for(String name : tempDepartmentNames)
-                if(name!=null){
-                    departmentNames[counter] = name;
-                    counter++;
-                }
-            return departmentNames;
-        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==submit) {
+        if(e.getSource()==submit){
             if(areValidFields() && isValidDate()){
-                //constructor takes (name, address, eircode, dateOfEmployment)
-                Manager manager = new Manager(textAreas[0].getText(),textAreas[1].getText(),textAreas[2].getText(),getDate());
+                Worker worker = new Worker(textAreas[0].getText(),textAreas[1].getText(),textAreas[2].getText(),getDate());
+                worker.setDepartment(departmentName);
+                Driver.workers.add(worker);
 
-                String selectedItem = departmentList.getSelectedItem().toString();
-                //search the global departments array for the selected department form the list
-                int index = 0, counter = 0;
+                int index = 0;
                 for(Department department : Driver.departments){
-                    if(department.getDepartmentName().equals(selectedItem)){
-                        //grab the index of said department in the global array
-                        index = counter;
+                    if(department.getDepartmentName().equals(departmentName)){
+                        //if the name of this department is the name of the selected department break and output message
+                        JOptionPane.showMessageDialog(null,"Worker added to the " + department.getDepartmentName() + " Department","Employee added successfully!",JOptionPane.INFORMATION_MESSAGE);
+                        break;
                     }
-                    counter++;
+                    //otherwise increment the index
+                    index++;
                 }
-                manager.setDepartment(Driver.departments.get(index));
-                Driver.departments.get(index).setDepartmentManager(manager);
-                Driver.managers.add(manager);;
-                //reset window and JComboBox
-                dispose();
-                new addManagerGUI();
+                //add the employee to the department
+                Driver.departments.get(index).addEmployee(worker);
+
+                //reset the text areas,monthList and repaint the window
+                for(JTextArea textArea : textAreas){
+                    textArea.setText("");
+                }
+                monthList.setSelectedIndex(0);
+                repaint();
             }
         }
-        //cancel button pressed
+        //cancel button selected
         else {
-            JOptionPane.showMessageDialog(null,"Exiting this window!","Confirmation",JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null,"Exiting this window","Confirmation",JOptionPane.INFORMATION_MESSAGE);
             dispose();
         }
     }
 
     //user defined methods start below
-    //this method returns an error message if anything was entered incorrectly
+    //these methods are a duplicate of the methods in addManagerGUI
     private boolean areValidFields(){
         boolean result = false;
         //a string that will hold all of the errors found
@@ -271,14 +232,14 @@ public class addManagerGUI extends JFrame implements ActionListener {
             }
             //else, the month is february, check for valid year, then leap year and respond appropriately
             else if(isValidYear()){
-                    if(Integer.parseInt(textAreas[4].getText())/4==0){
-                        if(dayNo > 0 && dayNo <=29)
-                            return true;
-                    }
-                    else{
-                        if(dayNo > 0 && dayNo <=28)
-                            return true;
-                    }
+                if(Integer.parseInt(textAreas[4].getText())/4==0){
+                    if(dayNo > 0 && dayNo <=29)
+                        return true;
+                }
+                else{
+                    if(dayNo > 0 && dayNo <=28)
+                        return true;
+                }
             }
         }
         return false;
@@ -319,31 +280,31 @@ public class addManagerGUI extends JFrame implements ActionListener {
     //this method validates the eircode entered, the address mightn't actually exist but it follows the validation steps
     //outlined by the respective authority
     private boolean isValidEircode(){
-    /*Eircode allowed characters chart found here under chapter 1.5.4
-    *http://www.ossiansmyth.ie/wp-content/uploads/2015/04/Eircode-Address-File-Product-Guide-Edition-1-Version-8-PUBLISHED.pdf
-    *
-    *Pos | Allowed characters
-    * 1  | A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
-    * 2  | 0-9
-    * 3  | 0-9 with the exception of W for D6W
-    * 4  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
-    * 5  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
-    * 6  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
-    * 7  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
-    **/
-    //in order to make this easier, i decided to store the allowed letters in a string so that i can use the .contains()
-    //otherwise i could have used a for loop for each character but that is not as efficient :P
+        /*Eircode allowed characters chart found here under chapter 1.5.4
+         *http://www.ossiansmyth.ie/wp-content/uploads/2015/04/Eircode-Address-File-Product-Guide-Edition-1-Version-8-PUBLISHED.pdf
+         *
+         *Pos | Allowed characters
+         * 1  | A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
+         * 2  | 0-9
+         * 3  | 0-9 with the exception of W for D6W
+         * 4  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
+         * 5  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
+         * 6  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
+         * 7  | 0-9, A,C,D,E,F,H,K,N,P,R,T,V,W,X,Y
+         **/
+        //in order to make this easier, i decided to store the allowed letters in a string so that i can use the .contains()
+        //otherwise i could have used a for loop for each character but that is not as efficient :P
         String allowedLetters = "ACDEFHKNPRTVWXY";
         String eircodeText = textAreas[2].getText();
         if(eircodeText.length()==7){
             //perform all of the requirement checks above in one if statement
             //substring used instead of charAt() because contains wants a charArray or 'String' to compare to
             if(allowedLetters.contains(eircodeText.substring(0,1)) && Character.isDigit(eircodeText.charAt(1)) &&
-            (Character.isDigit(eircodeText.charAt(2)) || (eircodeText.charAt(0)=='D' && eircodeText.charAt(1)=='6' && eircodeText.charAt(2)=='W')) &&
-            (Character.isDigit(eircodeText.charAt(3)) || allowedLetters.contains(eircodeText.substring(3,4))) &&
-            (Character.isDigit(eircodeText.charAt(4)) || allowedLetters.contains(eircodeText.substring(4,5))) &&
-            (Character.isDigit(eircodeText.charAt(5)) || allowedLetters.contains(eircodeText.substring(5,6))) &&
-            (Character.isDigit(eircodeText.charAt(6)) || allowedLetters.contains(eircodeText.substring(6,7)))){
+                    (Character.isDigit(eircodeText.charAt(2)) || (eircodeText.charAt(0)=='D' && eircodeText.charAt(1)=='6' && eircodeText.charAt(2)=='W')) &&
+                    (Character.isDigit(eircodeText.charAt(3)) || allowedLetters.contains(eircodeText.substring(3,4))) &&
+                    (Character.isDigit(eircodeText.charAt(4)) || allowedLetters.contains(eircodeText.substring(4,5))) &&
+                    (Character.isDigit(eircodeText.charAt(5)) || allowedLetters.contains(eircodeText.substring(5,6))) &&
+                    (Character.isDigit(eircodeText.charAt(6)) || allowedLetters.contains(eircodeText.substring(6,7)))){
                 return true;
             }
         }

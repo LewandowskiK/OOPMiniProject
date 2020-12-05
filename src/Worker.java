@@ -7,13 +7,14 @@
  * 4.Date of employment
  * The worker will then be assigned to a Department*/
 
+import java.io.Serializable;
 import java.util.GregorianCalendar;
 
-public class Worker extends Employee {
+public class Worker extends Employee implements Serializable {
     private String position;
     private String department;
 
-    public Worker(String name, String address, String eircode, GregorianCalendar dateOfEmployment, String position) {
+    public Worker(String name, String address, String eircode, GregorianCalendar dateOfEmployment) {
         super(name, address, eircode, dateOfEmployment);
         setPosition();
     }
@@ -25,6 +26,7 @@ public class Worker extends Employee {
 
     public void setDepartment(String department) {
         this.department = department;
+        setPosition();
     }
 
     public String getPosition() {

@@ -4,10 +4,11 @@
 * This program will do the calculations and checks such as validation of the eircode and
 * calculation of the salary of the employee*/
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
-public abstract class Employee {
+public abstract class Employee implements Serializable {
     private int EmployeeID;
     private String name;
     private String address;
@@ -74,7 +75,7 @@ public abstract class Employee {
     }
 
     //Called when assigning a new ID
-    private void incrementID(){
+    public static void incrementID(){
         IDCounter++;
     }
 

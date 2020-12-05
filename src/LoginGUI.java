@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class LoginGUI extends JFrame{
+public class LoginGUI extends JFrame implements WindowListener{
     //declaration of global components and variables needed for functionality
     private final JTextArea usernameField;
     private final JPasswordField passwordField;
@@ -74,25 +74,48 @@ public class LoginGUI extends JFrame{
         add(layoutPanel,BorderLayout.CENTER);
         add(loginButton,BorderLayout.SOUTH);
 
-        //set default close operation and visibility of the window
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        //add Window Listener and visibility of the window
+        addWindowListener(this);
         setVisible(true);
     }
 
+    //window Listener code to the main windows to ask the user if s/he wants to save the data to file
+    //duplicated in LoginGUI, ManagerGUI and CEOGUI
+    public void windowOpened(WindowEvent e){}
+    public void windowClosing(WindowEvent e){
+        if(JOptionPane.showConfirmDialog(null,"Would you like to save all the data to file?","Save to File?",JOptionPane.YES_NO_OPTION)==0){
+            Driver.saveToFile();
+        }
+        dispose();
+    }
+    public void windowClosed(WindowEvent e){}
+    public void windowIconified(WindowEvent e){}
+    public void windowDeiconified(WindowEvent e){}
+    public void windowActivated(WindowEvent e){}
+    public void windowDeactivated(WindowEvent e){}
+
     private class ButtonEventHandler implements ActionListener{
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ADD DIFFERENT ACCOUNTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         public void actionPerformed(ActionEvent e) {
-            //username 'ceo', password 'CEO' case sensitive
+            //username 'ceo' not case sensitive, password 'CEO' case sensitive
             if(usernameField.getText().toLowerCase().equals("ceo") && encrypt(passwordField.getPassword()).equals("HJT")){
-                JOptionPane.showMessageDialog(null,"CEO logged in");
-                CEOGUI gui = new CEOGUI();
+                new CEOGUI();
                 dispose();
             }
-            //username and password validation CURRENT PASSWORD FOR TESTING IS 'password', case sensitive
-            else if(encrypt(passwordField.getPassword()).equals("ufxx|twi") && usernameField.getText().toLowerCase().equals("username")){
-                //do stuff, simple dialog and exit for now
-                JOptionPane.showMessageDialog(null,"temporary user logged in");
-                System.exit(0);
+            //username 'manager' not case sensitive, password 'Manager' case sensitive
+            else if(encrypt(passwordField.getPassword()).equals("Rfsfljw") && usernameField.getText().toLowerCase().equals("manager")){
+                if(Driver.managers.size()>0){
+                    //create the GUI
+                    new ManagerGUI();
+                    dispose();
+                }
+                else {
+                    JOptionPane.showMessageDialog(null,"Please register departments/assign managers before logging in","No managers authorised",JOptionPane.INFORMATION_MESSAGE);
+                    //reset the text fields
+                    usernameField.setText("");
+                    passwordField.setText("");
+                    repaint();
+                }
             }
             else{
                 //decrement attemptCounter and display error message and attempts remaining
@@ -110,23 +133,23 @@ public class LoginGUI extends JFrame{
                 //reset the text fields
                 usernameField.setText("");
                 passwordField.setText("");
+                repaint();
             }
         }
     }
 
+    //user made method to encrypt the password received from the user, since .getPassword returns a char array the input is a char[]
     private String encrypt(char[] password){
         String encryptedPassword = "";
 
         //simple encryption method - caesar cypher - learned in RAD first year translated/amended from python to java language
-        //for each character the ASCII value will be increased by 5,then the character and stored to a string and returned for comparison
+        //for each character the ASCII value will be increased by 5,then the character is brought back to char from the ascii value and stored to a string then returned for comparison
 
         for(char c : password){
             int ascii = c;
             ascii+=5;
             encryptedPassword += (char)ascii;
         }
-        //USED TO GET ENCRYPTED PASSWORD TEMPORARILY
-        //System.out.println(encryptedPassword);
         return encryptedPassword;
     }
 }
